@@ -139,6 +139,20 @@
             box-shadow: 0 0 0 3px rgba(17,17,17,0.06);
         }
 
+        textarea.error {
+            border-color: #e55;
+            box-shadow: 0 0 0 3px rgba(220,50,50,0.08);
+        }
+
+        .field-error {
+            font-size: 0.78rem;
+            color: #e55;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .field-error.visible { display: block; }
+
         textarea::placeholder { color: #ccc; }
 
         /* SWOT grid */
@@ -282,11 +296,13 @@
             <div class="field">
                 <label>Цель на 6–9 месяцев</label>
                 <textarea name="goal" rows="3" placeholder="Например: стать руководителем команды, перейти в продукт, сменить компанию..."></textarea>
+                <div class="field-error">Заполни это поле</div>
             </div>
             <div class="field">
                 <label>Почему это важно для тебя?</label>
                 <div class="field-hint">Что изменится, когда окажешься там?</div>
                 <textarea name="goal_why" rows="3" placeholder="Что даст тебе эта цель..."></textarea>
+                <div class="field-error">Заполни это поле</div>
             </div>
 
             <div class="nav-actions">
@@ -310,14 +326,17 @@
                 <label>Что делаешь стабильно хорошо?</label>
                 <div class="field-hint">Компетенции, которые есть точно</div>
                 <textarea name="strengths" rows="3" placeholder="Структурное мышление, презентации, фасилитация..."></textarea>
+                <div class="field-error">Заполни это поле</div>
             </div>
             <div class="field">
                 <label>Каким опытом гордишься?</label>
                 <textarea name="experience" rows="3" placeholder="Проекты, решения, результаты..."></textarea>
+                <div class="field-error">Заполни это поле</div>
             </div>
             <div class="field">
                 <label>Как тебя воспринимают коллеги?</label>
                 <textarea name="reputation" rows="2" placeholder="Что говорят, как характеризуют..."></textarea>
+                <div class="field-error">Заполни это поле</div>
             </div>
 
             <div class="nav-actions">
@@ -340,14 +359,17 @@
             <div class="field">
                 <label>Когда максимально продуктивен?</label>
                 <textarea name="productive_when" rows="3" placeholder="Условия, форматы задач, обстановка..."></textarea>
+                <div class="field-error">Заполни это поле</div>
             </div>
             <div class="field">
                 <label>Что точно не работает?</label>
                 <textarea name="not_working" rows="3" placeholder="Задачи, форматы, ситуации, которые выматывают..."></textarea>
+                <div class="field-error">Заполни это поле</div>
             </div>
             <div class="field">
                 <label>Что выбивает из состояния чаще всего?</label>
                 <textarea name="drains" rows="2" placeholder="Главные триггеры снижения эффективности..."></textarea>
+                <div class="field-error">Заполни это поле</div>
             </div>
 
             <div class="nav-actions">
@@ -372,21 +394,25 @@
                     <label>Сильные стороны</label>
                     <div class="field-hint">Что помогает двигаться</div>
                     <textarea name="swot_strong" rows="4" placeholder="..."></textarea>
+                    <div class="field-error">Заполни это поле</div>
                 </div>
                 <div class="swot-cell field">
                     <label>Слабые стороны</label>
                     <div class="field-hint">Зоны роста, чего не хватает</div>
                     <textarea name="swot_weak" rows="4" placeholder="..."></textarea>
+                    <div class="field-error">Заполни это поле</div>
                 </div>
                 <div class="swot-cell field">
                     <label>Возможности</label>
                     <div class="field-hint">Что открывается из сильных сторон</div>
                     <textarea name="swot_opportunities" rows="4" placeholder="..."></textarea>
+                    <div class="field-error">Заполни это поле</div>
                 </div>
                 <div class="swot-cell field">
                     <label>Угрозы</label>
                     <div class="field-hint">Что может помешать</div>
                     <textarea name="swot_threats" rows="4" placeholder="..."></textarea>
+                    <div class="field-error">Заполни это поле</div>
                 </div>
             </div>
 
@@ -425,7 +451,26 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    function validateStep(stepNum) {
+        const step = document.getElementById(`step-${stepNum}`);
+        const textareas = step.querySelectorAll('textarea');
+        let valid = true;
+        textareas.forEach(ta => {
+            const err = ta.closest('.field').querySelector('.field-error');
+            if (!ta.value.trim()) {
+                ta.classList.add('error');
+                if (err) err.classList.add('visible');
+                valid = false;
+            } else {
+                ta.classList.remove('error');
+                if (err) err.classList.remove('visible');
+            }
+        });
+        return valid;
+    }
+
     function nextStep() {
+        if (!validateStep(current)) return;
         if (current < total) { current++; updateUI(); }
     }
 
@@ -435,6 +480,7 @@
 
     document.getElementById('surveyForm').addEventListener('submit', async (e) => {
         e.preventDefault();
+        if (!validateStep(current)) return;
         document.getElementById('mainContent').style.display = 'none';
         document.getElementById('loader').classList.add('active');
 
