@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отчёт — AI Career Coach</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Geist', -apple-system, sans-serif;
+            background: #fafafa;
+            color: #111;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        nav {
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #ebebeb;
+        }
+
+        .logo {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #111;
+            text-decoration: none;
+            letter-spacing: -0.01em;
+        }
+
+        .nav-tag {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #22c55e;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 4px 12px;
+            border-radius: 100px;
+        }
+
+        main {
+            flex: 1;
+            max-width: 640px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 56px 24px 80px;
+        }
+
+        .report-header {
+            margin-bottom: 48px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid #ebebeb;
+        }
+
+        .report-label {
+            font-size: 0.72rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #bbb;
+            margin-bottom: 10px;
+        }
+
+        .report-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            line-height: 1.2;
+        }
+
+        /* Report sections */
+        .report-body h2 {
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #888;
+            margin: 36px 0 14px;
+        }
+
+        .report-body p {
+            font-size: 0.95rem;
+            color: #333;
+            line-height: 1.7;
+            font-weight: 300;
+            margin-bottom: 10px;
+        }
+
+        .report-body ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .report-body ul li {
+            font-size: 0.95rem;
+            color: #333;
+            line-height: 1.65;
+            font-weight: 300;
+            padding: 8px 0 8px 18px;
+            border-bottom: 1px solid #f0f0f0;
+            position: relative;
+        }
+
+        .report-body ul li:last-child { border-bottom: none; }
+
+        .report-body ul li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 17px;
+            width: 5px;
+            height: 5px;
+            background: #111;
+            border-radius: 50%;
+        }
+
+        /* Actions */
+        .report-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 48px;
+            padding-top: 28px;
+            border-top: 1px solid #ebebeb;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #111;
+            color: #fafafa;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 11px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            letter-spacing: -0.01em;
+            transition: background 0.15s;
+            text-decoration: none;
+        }
+
+        .btn:hover { background: #222; }
+
+        .btn-outline {
+            background: white;
+            color: #555;
+            border: 1px solid #e4e4e4;
+        }
+
+        .btn-outline:hover { background: #f5f5f5; color: #111; }
+
+        /* Empty state */
+        #emptyState {
+            text-align: center;
+            padding: 80px 0;
+            display: none;
+        }
+
+        #emptyState p {
+            color: #888;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+
+        footer {
+            padding: 20px 40px;
+            border-top: 1px solid #ebebeb;
+            text-align: center;
+        }
+
+        footer p { font-size: 0.78rem; color: #ccc; }
+
+        @media (max-width: 480px) {
+            nav { padding: 16px 20px; }
+            main { padding: 40px 20px 60px; }
+            .report-actions { flex-direction: column; align-items: stretch; }
+            footer { padding: 16px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/" class="logo">AI Career Coach</a>
+    <span class="nav-tag">Отчёт готов</span>
+</nav>
+
+<main>
+    <div id="reportContainer">
+        <div class="report-header">
+            <div class="report-label">Карьерная диагностика · Сессия 1</div>
+            <h1 class="report-title">Персональный отчёт</h1>
+        </div>
+
+        <div class="report-body" id="reportBody"></div>
+
+        <div class="report-actions">
+            <button onclick="downloadReport()" class="btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                </svg>
+                Скачать .md
+            </button>
+            <a href="/survey" class="btn btn-outline">Пройти заново</a>
+        </div>
+    </div>
+
+    <div id="emptyState">
+        <p>Отчёт не найден. Пройди диагностику чтобы получить результат.</p>
+        <a href="/survey" class="btn">Начать диагностику</a>
+    </div>
+</main>
+
+<footer>
+    <p>AI Career Coach — карьерная диагностика для IT-специалистов</p>
+</footer>
+
+<script>
+    const report = localStorage.getItem('careerReport');
+
+    if (!report) {
+        document.getElementById('reportContainer').style.display = 'none';
+        document.getElementById('emptyState').style.display = 'block';
+    } else {
+        document.getElementById('reportBody').innerHTML = parseMarkdown(report);
+    }
+
+    function parseMarkdown(text) {
+        return text
+            .replace(/^## (.+)$/gm, '</ul><h2>$1</h2><ul class="temp">')
+            .replace(/^[-*] (.+)$/gm, '<li>$1</li>')
+            .replace(/^(?!<[hlu\/])(.+)$/gm, (m, p1) => p1.trim() ? `<p>${p1}</p>` : '')
+            .replace(/<ul class="temp">(\s*<\/ul>)?/g, '<ul>')
+            .replace(/^<\/ul>/, '')
+            .trim();
+    }
+
+    function downloadReport() {
+        const blob = new Blob([report], { type: 'text/markdown' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'career-report.md';
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Career Coach</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Geist', -apple-system, sans-serif;
+            background: #fafafa;
+            color: #111;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        nav {
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #ebebeb;
+        }
+
+        .logo {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #111;
+            letter-spacing: -0.01em;
+        }
+
+        .nav-link {
+            font-size: 0.85rem;
+            color: #888;
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+
+        .nav-link:hover { color: #111; }
+
+        /* Hero — центр страницы */
+        .hero {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 80px 24px;
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #666;
+            background: #f0f0f0;
+            border: 1px solid #e4e4e4;
+            padding: 4px 12px;
+            border-radius: 100px;
+            margin-bottom: 36px;
+            letter-spacing: 0.02em;
+        }
+
+        .tag-dot {
+            width: 5px;
+            height: 5px;
+            background: #22c55e;
+            border-radius: 50%;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 600;
+            line-height: 1.15;
+            letter-spacing: -0.03em;
+            color: #111;
+            margin-bottom: 20px;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: #666;
+            line-height: 1.65;
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+
+        .cta-row {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #111;
+            color: #fafafa;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            letter-spacing: -0.01em;
+            transition: background 0.15s, transform 0.1s;
+        }
+
+        .btn:hover {
+            background: #222;
+            transform: translateY(-1px);
+        }
+
+        .btn svg { transition: transform 0.15s; }
+        .btn:hover svg { transform: translateX(2px); }
+
+        .hint {
+            font-size: 0.8rem;
+            color: #bbb;
+        }
+
+        /* Steps */
+        .steps {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin-top: 64px;
+            border: 1px solid #ebebeb;
+            border-radius: 10px;
+            overflow: hidden;
+            width: 100%;
+            background: white;
+        }
+
+        .step {
+            flex: 1;
+            padding: 20px 16px;
+            text-align: center;
+            position: relative;
+        }
+
+        .step + .step::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 20%;
+            height: 60%;
+            width: 1px;
+            background: #ebebeb;
+        }
+
+        .step-n {
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #ccc;
+            letter-spacing: 0.06em;
+            margin-bottom: 4px;
+        }
+
+        .step-name {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        /* Footer */
+        footer {
+            padding: 20px 40px;
+            border-top: 1px solid #ebebeb;
+            text-align: center;
+        }
+
+        footer p {
+            font-size: 0.78rem;
+            color: #ccc;
+        }
+
+        @media (max-width: 480px) {
+            nav { padding: 16px 20px; }
+            .steps { flex-direction: column; }
+            .step + .step::before { display: none; }
+            .step { border-top: 1px solid #ebebeb; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { transition: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <span class="logo">AI Career Coach</span>
+    <a href="/survey" class="nav-link">Начать →</a>
+</nav>
+
+<main class="hero">
+    <div class="tag">
+        <span class="tag-dot"></span>
+        Карьерная диагностика
+    </div>
+
+    <h1>Где ты сейчас<br>и куда идти дальше</h1>
+
+    <p class="subtitle">
+        Ответь на вопросы четырёх блоков — получи персональный разбор от AI. Без шаблонных советов.
+    </p>
+
+    <div class="cta-row">
+        <a href="/survey" class="btn">
+            Начать диагностику
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+        </a>
+        <span class="hint">Бесплатно · Без регистрации · ~15 минут</span>
+    </div>
+
+    <div class="steps">
+        <div class="step">
+            <div class="step-n">01</div>
+            <div class="step-name">Цели</div>
+        </div>
+        <div class="step">
+            <div class="step-n">02</div>
+            <div class="step-name">Ресурсы</div>
+        </div>
+        <div class="step">
+            <div class="step-n">03</div>
+            <div class="step-name">Эффективность</div>
+        </div>
+        <div class="step">
+            <div class="step-n">04</div>
+            <div class="step-name">SWOT</div>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <p>AI Career Coach — карьерная диагностика для IT-специалистов</p>
+</footer>
+
+</body>
+</html>

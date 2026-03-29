@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Career Coach</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0e0e0e;
+            --surface: #161616;
+            --border: #2a2a2a;
+            --text: #f0ede6;
+            --muted: #888;
+            --accent: #c8b89a;
+            --accent-dim: rgba(200, 184, 154, 0.12);
+            --cta: #e8dcc8;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 300;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Grain overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0.35;
+        }
+
+        /* Nav */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 20px 48px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.3s, background 0.3s;
+        }
+
+        nav.scrolled {
+            background: rgba(14, 14, 14, 0.9);
+            border-color: var(--border);
+            backdrop-filter: blur(12px);
+        }
+
+        .nav-logo {
+            font-family: 'Instrument Serif', serif;
+            font-size: 1.1rem;
+            color: var(--accent);
+            letter-spacing: 0.02em;
+        }
+
+        .nav-cta {
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-cta:hover { color: var(--text); }
+
+        /* Hero */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 120px 48px 80px;
+            position: relative;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .hero-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent);
+            border: 1px solid var(--accent-dim);
+            padding: 6px 14px;
+            border-radius: 100px;
+            margin-bottom: 48px;
+            width: fit-content;
+            opacity: 0;
+            animation: fadeUp 0.6s ease 0.1s forwards;
+        }
+
+        .hero-tag::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s ease infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        .hero-headline {
+            font-family: 'Instrument Serif', serif;
+            font-size: clamp(3rem, 7vw, 6rem);
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+            margin-bottom: 32px;
+            opacity: 0;
+            animation: fadeUp 0.7s ease 0.2s forwards;
+        }
+
+        .hero-headline em {
+            font-style: italic;
+            color: var(--accent);
+        }
+
+        .hero-sub {
+            font-size: clamp(1rem, 1.5vw, 1.2rem);
+            color: var(--muted);
+            max-width: 500px;
+            line-height: 1.7;
+            margin-bottom: 56px;
+            opacity: 0;
+            animation: fadeUp 0.7s ease 0.35s forwards;
+        }
+
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            opacity: 0;
+            animation: fadeUp 0.7s ease 0.5s forwards;
+        }
+
+        .btn-main {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--cta);
+            color: #0e0e0e;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 14px 28px;
+            border-radius: 6px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.15s;
+            letter-spacing: 0.01em;
+        }
+
+        .btn-main:hover {
+            background: #f5eed9;
+            transform: translateY(-1px);
+        }
+
+        .btn-main svg { transition: transform 0.2s; }
+        .btn-main:hover svg { transform: translateX(3px); }
+
+        .time-badge {
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        /* Decorative line */
+        .hero-line {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1px;
+            height: 40%;
+            background: linear-gradient(to bottom, transparent, var(--border), transparent);
+            display: none;
+        }
+
+        @media (min-width: 900px) { .hero-line { display: block; } }
+
+        /* Divider */
+        .divider {
+            width: 100%;
+            height: 1px;
+            background: var(--border);
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* How it works */
+        .section {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 100px 48px;
+        }
+
+        .section-label {
+            font-size: 0.72rem;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-family: 'Instrument Serif', serif;
+            font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+            line-height: 1.2;
+            margin-bottom: 64px;
+            max-width: 480px;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .step-card {
+            background: var(--surface);
+            padding: 32px 28px;
+            transition: background 0.2s;
+        }
+
+        .step-card:hover { background: #1c1c1c; }
+
+        .step-num {
+            font-family: 'Instrument Serif', serif;
+            font-size: 2.5rem;
+            color: var(--border);
+            line-height: 1;
+            margin-bottom: 20px;
+            transition: color 0.2s;
+        }
+
+        .step-card:hover .step-num { color: var(--accent); }
+
+        .step-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .step-desc {
+            font-size: 0.85rem;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        /* What you get */
+        .output-section {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 48px 100px;
+        }
+
+        .output-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .output-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            transition: border-color 0.2s;
+        }
+
+        .output-card:hover { border-color: var(--accent-dim); }
+
+        .output-card:first-child {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .output-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--accent-dim);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .output-icon svg { color: var(--accent); }
+
+        .output-title {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .output-desc {
+            font-size: 0.85rem;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .report-preview {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            font-size: 0.8rem;
+        }
+
+        .report-line {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 14px;
+            align-items: flex-start;
+        }
+
+        .report-line:last-child { margin-bottom: 0; }
+
+        .report-dot {
+            width: 4px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 50%;
+            margin-top: 7px;
+            flex-shrink: 0;
+        }
+
+        .report-text { color: var(--muted); line-height: 1.5; }
+        .report-heading {
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        /* CTA bottom */
+        .cta-section {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 48px 120px;
+        }
+
+        .cta-block {
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 72px 64px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            background: var(--surface);
+        }
+
+        .cta-block::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(200, 184, 154, 0.06) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .cta-title {
+            font-family: 'Instrument Serif', serif;
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            margin-bottom: 16px;
+            line-height: 1.1;
+        }
+
+        .cta-sub {
+            color: var(--muted);
+            margin-bottom: 40px;
+            font-size: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 24px 48px;
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-logo {
+            font-family: 'Instrument Serif', serif;
+            color: var(--accent);
+            font-size: 0.95rem;
+        }
+
+        .footer-text {
+            font-size: 0.78rem;
+            color: #555;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            nav { padding: 16px 24px; }
+            .hero, .section, .output-section, .cta-section { padding-left: 24px; padding-right: 24px; }
+            .steps-grid { grid-template-columns: 1fr 1fr; }
+            .output-grid { grid-template-columns: 1fr; }
+            .output-card:first-child { grid-column: 1; grid-template-columns: 1fr; }
+            .cta-block { padding: 48px 28px; }
+            footer { flex-direction: column; gap: 8px; text-align: center; }
+        }
+
+        @media (max-width: 480px) {
+            .steps-grid { grid-template-columns: 1fr; }
+            .hero-actions { flex-direction: column; align-items: flex-start; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation: none !important; transition: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+<nav id="mainNav">
+    <div class="nav-logo">AI Career Coach</div>
+    <a href="/survey" class="nav-cta">Начать диагностику</a>
+</nav>
+
+<main>
+    <section class="hero">
+        <div class="hero-tag">Карьерная диагностика</div>
+        <h1 class="hero-headline">
+            Застрял.<br>
+            Не знаешь<br>
+            <em>куда дальше.</em>
+        </h1>
+        <p class="hero-sub">
+            Структурированная карьерная диагностика для IT-специалистов. Ответь на вопросы четырёх блоков — получи персональный разбор от AI.
+        </p>
+        <div class="hero-actions">
+            <a href="/survey" class="btn-main">
+                Начать диагностику
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+            <span class="time-badge">~15 минут</span>
+        </div>
+        <div class="hero-line"></div>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="section">
+        <p class="section-label">Как это работает</p>
+        <h2 class="section-title">4 блока вопросов. 1 персональный отчёт.</h2>
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-num">01</div>
+                <div class="step-title">Цели</div>
+                <div class="step-desc">Куда хочешь прийти через 6–9 месяцев и почему это важно</div>
+            </div>
+            <div class="step-card">
+                <div class="step-num">02</div>
+                <div class="step-title">Ресурсы</div>
+                <div class="step-desc">Компетенции, опыт и то, как тебя воспринимают коллеги</div>
+            </div>
+            <div class="step-card">
+                <div class="step-num">03</div>
+                <div class="step-title">Эффективность</div>
+                <div class="step-desc">Когда продуктивен, что не работает, что выбивает из состояния</div>
+            </div>
+            <div class="step-card">
+                <div class="step-num">04</div>
+                <div class="step-title">SWOT</div>
+                <div class="step-desc">Честная картина: сильные стороны, зоны роста, возможности и угрозы</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="output-section">
+        <div style="padding: 100px 0 64px;">
+            <p class="section-label">Что получишь</p>
+            <h2 class="section-title">Персональный карьерный отчёт</h2>
+        </div>
+        <div class="output-grid">
+            <div class="output-card">
+                <div>
+                    <div class="output-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M9 12h6M9 16h6M9 8h6M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <div class="output-title">Разбор на основе твоих ответов</div>
+                    <div class="output-desc">AI не даёт шаблонные советы. Отчёт строится строго из того, что ты написал — без лишней мотивационной риторики.</div>
+                </div>
+                <div class="report-preview">
+                    <div class="report-heading">Рекомендации</div>
+                    <div class="report-line">
+                        <div class="report-dot"></div>
+                        <div class="report-text">Найди продуктового ментора — это твой главный структурный пробел прямо сейчас</div>
+                    </div>
+                    <div class="report-line">
+                        <div class="report-dot"></div>
+                        <div class="report-text">Делегируй операционку подчинённой — ты держишь её из страха пустоты, не из необходимости</div>
+                    </div>
+                    <div class="report-line">
+                        <div class="report-dot"></div>
+                        <div class="report-text">Увеличь видимость: один публичный кейс в квартал даст больше, чем год тихой работы</div>
+                    </div>
+                </div>
+            </div>
+            <div class="output-card">
+                <div class="output-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 8v4l3 3"/>
+                    </svg>
+                </div>
+                <div class="output-title">Точка 0</div>
+                <div class="output-desc">Где ты находишься сейчас — честно, без прикрас. Это отправная точка, от которой считается движение.</div>
+            </div>
+            <div class="output-card">
+                <div class="output-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                    </svg>
+                </div>
+                <div class="output-title">Сильные стороны и пробелы</div>
+                <div class="output-desc">На что опереться прямо сейчас и что нужно закрыть, чтобы дойти до цели.</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="cta-section" style="padding-top: 100px;">
+        <div class="cta-block">
+            <h2 class="cta-title">Пора разобраться,<br><em style="font-style: italic; color: var(--accent);">куда идти.</em></h2>
+            <p class="cta-sub">Бесплатно. Без регистрации. 15 минут.</p>
+            <a href="/survey" class="btn-main" style="display: inline-flex;">
+                Начать диагностику
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <div class="footer-logo">AI Career Coach</div>
+    <div class="footer-text">Карьерная диагностика для IT-специалистов</div>
+</footer>
+
+<script>
+    const nav = document.getElementById('mainNav');
+    window.addEventListener('scroll', () => {
+        nav.classList.toggle('scrolled', window.scrollY > 40);
+    });
+</script>
+
+</body>
+</html>
