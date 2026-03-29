@@ -494,6 +494,7 @@
             });
             const result = await res.json();
             localStorage.setItem('careerReport', result.report);
+            localStorage.setItem('session1Data', JSON.stringify(data));
             window.location.href = '/result';
         } catch (err) {
             document.getElementById('loader').classList.remove('active');

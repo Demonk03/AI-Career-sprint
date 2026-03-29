@@ -5,7 +5,7 @@ from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from openai import OpenAI
 from dotenv import load_dotenv
-from prompts import build_prompt
+from prompts import build_prompt, build_prompt_session2
 import os
 
 load_dotenv()
@@ -30,6 +30,42 @@ async def survey(request: Request):
 @app.get("/result", response_class=HTMLResponse)
 async def result(request: Request):
     return templates.TemplateResponse("result.html", {"request": request})
+
+
+@app.get("/session2", response_class=HTMLResponse)
+async def session2(request: Request):
+    return templates.TemplateResponse("session2.html", {"request": request})
+
+
+@app.get("/result2", response_class=HTMLResponse)
+async def result2(request: Request):
+    return templates.TemplateResponse("result2.html", {"request": request})
+
+
+class TaskItem(BaseModel):
+    task: str
+    energy: str
+    time_percent: str
+
+
+class Session2Data(BaseModel):
+    tasks: list[TaskItem]
+    session1: dict
+
+
+@app.post("/analyze2")
+async def analyze2(data: Session2Data):
+    prompt = build_prompt_session2(
+        [t.model_dump() for t in data.tasks],
+        data.session1
+    )
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.7,
+    )
+    report = response.choices[0].message.content
+    return {"report": report}
 
 
 class SurveyData(BaseModel):

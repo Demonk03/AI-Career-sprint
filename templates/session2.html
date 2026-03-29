@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сессия 2 — AI Career Coach</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Geist', -apple-system, sans-serif;
+            background: #fafafa;
+            color: #111;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        nav {
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #ebebeb;
+            position: sticky;
+            top: 0;
+            background: #fafafa;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #111;
+            letter-spacing: -0.01em;
+            text-decoration: none;
+        }
+
+        .nav-tag {
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        main {
+            flex: 1;
+            max-width: 720px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 56px 24px 80px;
+        }
+
+        .step-label {
+            font-size: 0.72rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #bbb;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            line-height: 1.2;
+            margin-bottom: 8px;
+        }
+
+        .step-hint {
+            font-size: 0.875rem;
+            color: #888;
+            margin-bottom: 40px;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        /* Table */
+        .table-wrap {
+            overflow-x: auto;
+            margin-bottom: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 0 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #ebebeb;
+        }
+
+        thead th:last-child { width: 40px; }
+        thead th:nth-child(2) { width: 200px; }
+        thead th:nth-child(3) { width: 100px; }
+
+        tbody tr { border-bottom: 1px solid #f0f0f0; }
+        tbody tr:last-child { border-bottom: none; }
+
+        tbody td { padding: 10px 8px; vertical-align: middle; }
+
+        input[type="text"], select, input[type="number"] {
+            width: 100%;
+            padding: 9px 12px;
+            background: white;
+            border: 1px solid #e4e4e4;
+            border-radius: 7px;
+            font-family: inherit;
+            font-size: 0.875rem;
+            font-weight: 300;
+            color: #111;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        input[type="text"]:focus, select:focus, input[type="number"]:focus {
+            border-color: #111;
+            box-shadow: 0 0 0 3px rgba(17,17,17,0.06);
+        }
+
+        input.error, select.error {
+            border-color: #e55;
+            box-shadow: 0 0 0 3px rgba(220,50,50,0.08);
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 30px;
+            cursor: pointer;
+        }
+
+        .energy-gives { color: #16a34a; }
+        .energy-neutral { color: #888; }
+        .energy-drains { color: #dc2626; }
+
+        input[type="number"] { -moz-appearance: textfield; }
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+        .btn-remove {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #ccc;
+            padding: 4px;
+            border-radius: 4px;
+            transition: color 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-remove:hover { color: #e55; }
+
+        .btn-add {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: #888;
+            background: none;
+            border: 1px dashed #ddd;
+            border-radius: 7px;
+            padding: 9px 16px;
+            cursor: pointer;
+            width: 100%;
+            justify-content: center;
+            transition: color 0.15s, border-color 0.15s;
+        }
+
+        .btn-add:hover { color: #111; border-color: #aaa; }
+
+        .error-msg {
+            font-size: 0.8rem;
+            color: #e55;
+            margin-top: 8px;
+            display: none;
+        }
+
+        .error-msg.visible { display: block; }
+
+        /* Actions */
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 28px;
+            border-top: 1px solid #ebebeb;
+        }
+
+        .btn-back {
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: #888;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 10px 0;
+            transition: color 0.15s;
+            text-decoration: none;
+        }
+
+        .btn-back:hover { color: #111; }
+
+        .btn-submit {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #111;
+            color: #fafafa;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 11px 22px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            letter-spacing: -0.01em;
+            transition: background 0.15s;
+        }
+
+        .btn-submit:hover { background: #222; }
+
+        /* Loader */
+        #loader {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            padding: 80px 24px;
+            text-align: center;
+        }
+
+        #loader.active { display: flex; }
+
+        .loader-spinner {
+            width: 32px;
+            height: 32px;
+            border: 2px solid #ebebeb;
+            border-top-color: #111;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .loader-text {
+            font-size: 0.9rem;
+            color: #888;
+            font-weight: 300;
+        }
+
+        footer {
+            padding: 20px 40px;
+            border-top: 1px solid #ebebeb;
+            text-align: center;
+        }
+
+        footer p { font-size: 0.78rem; color: #ccc; }
+
+        @media (max-width: 600px) {
+            nav { padding: 16px 20px; }
+            main { padding: 40px 16px 60px; }
+            thead th:nth-child(2) { width: 160px; }
+            footer { padding: 16px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/" class="logo">AI Career Coach</a>
+    <span class="nav-tag">Сессия 2 из 3</span>
+</nav>
+
+<main id="mainContent">
+    <div class="step-label">02 / Роль и функционал</div>
+    <h2>Что ты делаешь каждый день?</h2>
+    <p class="step-hint">Перечисли свои основные задачи и функции. Для каждой — оцени энергию и примерный % рабочего времени.</p>
+
+    <div class="table-wrap">
+        <table id="tasksTable">
+            <thead>
+                <tr>
+                    <th>Задача / функция</th>
+                    <th>Энергия</th>
+                    <th>% времени</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- строки добавляются JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <button type="button" class="btn-add" onclick="addRow()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14M5 12h14"/>
+        </svg>
+        Добавить задачу
+    </button>
+
+    <div class="error-msg" id="tableError">Заполни все поля во всех строках</div>
+
+    <div class="nav-actions">
+        <a href="/result" class="btn-back">← Назад к отчёту</a>
+        <button type="button" class="btn-submit" onclick="submitSession2()">
+            Получить анализ
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+        </button>
+    </div>
+</main>
+
+<div id="loader">
+    <div class="loader-spinner"></div>
+    <p class="loader-text">Анализируем роль и функционал...</p>
+</div>
+
+<footer>
+    <p>AI Career Coach — карьерная диагностика для IT-специалистов</p>
+</footer>
+
+<script>
+    let rowCount = 0;
+
+    function addRow(task = '', energy = '', time = '') {
+        rowCount++;
+        const tbody = document.getElementById('tableBody');
+        const tr = document.createElement('tr');
+        tr.id = `row-${rowCount}`;
+        tr.innerHTML = `
+            <td><input type="text" placeholder="Например: проведение встреч с заказчиками" value="${task}"></td>
+            <td>
+                <select>
+                    <option value="" ${energy === '' ? 'selected' : ''} disabled>Выбери...</option>
+                    <option value="Даёт энергию" ${energy === 'Даёт энергию' ? 'selected' : ''}>Даёт энергию</option>
+                    <option value="Нейтрально" ${energy === 'Нейтрально' ? 'selected' : ''}>Нейтрально</option>
+                    <option value="Выматывает" ${energy === 'Выматывает' ? 'selected' : ''}>Выматывает</option>
+                </select>
+            </td>
+            <td><input type="number" min="1" max="100" placeholder="20" value="${time}"></td>
+            <td>
+                <button type="button" class="btn-remove" onclick="removeRow(${rowCount})" title="Удалить">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                </button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    }
+
+    function removeRow(id) {
+        const row = document.getElementById(`row-${id}`);
+        if (row) row.remove();
+    }
+
+    function validate() {
+        const rows = document.querySelectorAll('#tableBody tr');
+        if (rows.length === 0) {
+            document.getElementById('tableError').textContent = 'Добавь хотя бы одну задачу';
+            document.getElementById('tableError').classList.add('visible');
+            return false;
+        }
+
+        let valid = true;
+        rows.forEach(row => {
+            const inputs = row.querySelectorAll('input, select');
+            inputs.forEach(input => {
+                if (!input.value.trim()) {
+                    input.classList.add('error');
+                    valid = false;
+                } else {
+                    input.classList.remove('error');
+                }
+            });
+        });
+
+        const errEl = document.getElementById('tableError');
+        if (!valid) {
+            errEl.textContent = 'Заполни все поля во всех строках';
+            errEl.classList.add('visible');
+        } else {
+            errEl.classList.remove('visible');
+        }
+        return valid;
+    }
+
+    async function submitSession2() {
+        if (!validate()) return;
+
+        const rows = document.querySelectorAll('#tableBody tr');
+        const tasks = [];
+        rows.forEach(row => {
+            const inputs = row.querySelectorAll('input, select');
+            tasks.push({
+                task: inputs[0].value.trim(),
+                energy: inputs[1].value,
+                time_percent: inputs[2].value
+            });
+        });
+
+        const session1Data = JSON.parse(localStorage.getItem('session1Data') || '{}');
+
+        document.getElementById('mainContent').style.display = 'none';
+        document.getElementById('loader').classList.add('active');
+
+        try {
+            const res = await fetch('/analyze2', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tasks, session1: session1Data })
+            });
+            const result = await res.json();
+            localStorage.setItem('session2Report', result.report);
+            window.location.href = '/result2';
+        } catch (err) {
+            document.getElementById('loader').classList.remove('active');
+            document.getElementById('mainContent').style.display = 'block';
+            alert('Произошла ошибка. Попробуй ещё раз.');
+        }
+    }
+
+    // Добавить 3 строки по умолчанию
+    addRow();
+    addRow();
+    addRow();
+</script>
+
+</body>
+</html>

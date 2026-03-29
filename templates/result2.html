@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Отчёт — AI Career Coach</title>
+    <title>Отчёт Сессия 2 — AI Career Coach</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -75,7 +75,6 @@
             line-height: 1.2;
         }
 
-        /* Report sections */
         .report-body h2 {
             font-size: 0.72rem;
             font-weight: 600;
@@ -121,7 +120,6 @@
             border-radius: 50%;
         }
 
-        /* Actions */
         .report-actions {
             display: flex;
             align-items: center;
@@ -159,7 +157,6 @@
 
         .btn-outline:hover { background: #f5f5f5; color: #111; }
 
-        /* Empty state */
         #emptyState {
             text-align: center;
             padding: 80px 0;
@@ -198,8 +195,8 @@
 <main>
     <div id="reportContainer">
         <div class="report-header">
-            <div class="report-label">Карьерная диагностика · Сессия 1</div>
-            <h1 class="report-title">Персональный отчёт</h1>
+            <div class="report-label">Карьерная диагностика · Сессия 2</div>
+            <h1 class="report-title">Анализ роли и функционала</h1>
         </div>
 
         <div class="report-body" id="reportBody"></div>
@@ -211,16 +208,13 @@
                 </svg>
                 Скачать .md
             </button>
-            <a href="/session2" class="btn">
-                Сессия 2 →
-            </a>
-            <a href="/survey" class="btn btn-outline">Пройти заново</a>
+            <a href="/result" class="btn btn-outline">← Сессия 1</a>
         </div>
     </div>
 
     <div id="emptyState">
-        <p>Отчёт не найден. Пройди диагностику чтобы получить результат.</p>
-        <a href="/survey" class="btn">Начать диагностику</a>
+        <p>Отчёт не найден. Пройди сессию 2 чтобы получить результат.</p>
+        <a href="/session2" class="btn">Перейти к сессии 2</a>
     </div>
 </main>
 
@@ -229,7 +223,7 @@
 </footer>
 
 <script>
-    const report = localStorage.getItem('careerReport');
+    const report = localStorage.getItem('session2Report');
 
     if (!report) {
         document.getElementById('reportContainer').style.display = 'none';
@@ -253,7 +247,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'career-report.md';
+        a.download = 'career-report-session2.md';
         a.click();
         URL.revokeObjectURL(url);
     }
