@@ -7,6 +7,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 from prompts import build_prompt, build_prompt_session2
 import os
+import httpx
 
 load_dotenv()
 
@@ -66,6 +67,28 @@ async def analyze2(data: Session2Data):
     )
     report = response.choices[0].message.content
     return {"report": report}
+
+
+class FeedbackData(BaseModel):
+    session: int
+    rating: int
+    comment: str = ""
+
+
+@app.post("/feedback")
+async def feedback(data: FeedbackData):
+    token = os.getenv("TELEGRAM_BOT_TOKEN")
+    chat_id = os.getenv("TELEGRAM_CHAT_ID")
+    stars = "★" * data.rating + "☆" * (5 - data.rating)
+    text = f"Оценка сессии {data.session}: {stars} ({data.rating}/5)"
+    if data.comment:
+        text += f"\n\n{data.comment}"
+    async with httpx.AsyncClient() as client_http:
+        await client_http.post(
+            f"https://api.telegram.org/bot{token}/sendMessage",
+            json={"chat_id": chat_id, "text": text}
+        )
+    return {"ok": True}
 
 
 class SurveyData(BaseModel):
