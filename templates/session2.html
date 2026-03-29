@@ -378,13 +378,17 @@
 
     function validate() {
         const rows = document.querySelectorAll('#tableBody tr');
+        const errEl = document.getElementById('tableError');
+
         if (rows.length === 0) {
-            document.getElementById('tableError').textContent = 'Добавь хотя бы одну задачу';
-            document.getElementById('tableError').classList.add('visible');
+            errEl.textContent = 'Добавь хотя бы одну задачу';
+            errEl.classList.add('visible');
             return false;
         }
 
         let valid = true;
+
+        // Проверка пустых полей
         rows.forEach(row => {
             const inputs = row.querySelectorAll('input, select');
             inputs.forEach(input => {
@@ -397,14 +401,45 @@
             });
         });
 
-        const errEl = document.getElementById('tableError');
         if (!valid) {
             errEl.textContent = 'Заполни все поля во всех строках';
             errEl.classList.add('visible');
-        } else {
-            errEl.classList.remove('visible');
+            return false;
         }
-        return valid;
+
+        // Проверка значений > 100 в отдельной строке
+        rows.forEach(row => {
+            const timeInput = row.querySelector('input[type="number"]');
+            const val = +timeInput.value;
+            if (val > 100) {
+                timeInput.classList.add('error');
+                valid = false;
+            }
+        });
+
+        if (!valid) {
+            errEl.textContent = 'Значение % не может быть больше 100';
+            errEl.classList.add('visible');
+            return false;
+        }
+
+        // Проверка суммы
+        let total = 0;
+        rows.forEach(row => {
+            total += +row.querySelector('input[type="number"]').value;
+        });
+
+        if (total > 100) {
+            rows.forEach(row => {
+                row.querySelector('input[type="number"]').classList.add('error');
+            });
+            errEl.textContent = `Сумма % времени не может превышать 100 (сейчас ${total}%)`;
+            errEl.classList.add('visible');
+            return false;
+        }
+
+        errEl.classList.remove('visible');
+        return true;
     }
 
     async function submitSession2() {

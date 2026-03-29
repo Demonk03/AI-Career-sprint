@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Отчёт Сессия 2 — AI Career Coach</title>
+    <title>План развития — AI Career Coach</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -120,6 +120,7 @@
             border-radius: 50%;
         }
 
+        /* Feedback */
         .feedback-block {
             margin-top: 48px;
             padding: 28px;
@@ -260,14 +261,14 @@
 
 <nav>
     <a href="/" class="logo">AI Career Coach</a>
-    <span class="nav-tag">Отчёт готов</span>
+    <span class="nav-tag">Диагностика завершена</span>
 </nav>
 
 <main>
     <div id="reportContainer">
         <div class="report-header">
-            <div class="report-label">Карьерная диагностика · Сессия 2</div>
-            <h1 class="report-title">Анализ роли и функционала</h1>
+            <div class="report-label">Карьерная диагностика · Сессия 3</div>
+            <h1 class="report-title">План развития 70/20/10</h1>
         </div>
 
         <div class="report-body" id="reportBody"></div>
@@ -293,14 +294,13 @@
                 </svg>
                 Скачать .md
             </button>
-            <a href="/session3" class="btn">Сессия 3 →</a>
-            <a href="/result" class="btn btn-outline">← Сессия 1</a>
+            <a href="/result2" class="btn btn-outline">← Сессия 2</a>
         </div>
     </div>
 
     <div id="emptyState">
-        <p>Отчёт не найден. Пройди сессию 2 чтобы получить результат.</p>
-        <a href="/session2" class="btn">Перейти к сессии 2</a>
+        <p>Отчёт не найден. Пройди сессию 3 чтобы получить план.</p>
+        <a href="/session3" class="btn">Перейти к сессии 3</a>
     </div>
 </main>
 
@@ -309,7 +309,7 @@
 </footer>
 
 <script>
-    const report = localStorage.getItem('session2Report');
+    const report = localStorage.getItem('session3Report');
 
     if (!report) {
         document.getElementById('reportContainer').style.display = 'none';
@@ -327,7 +327,7 @@
             selectedRating = +star.dataset.v;
             highlight(selectedRating);
             document.getElementById('feedbackBtn').disabled = false;
-            document.getElementById('feedbackBtn').onclick = () => sendFeedback(2);
+            document.getElementById('feedbackBtn').onclick = () => sendFeedback(3);
         });
     });
 
@@ -363,22 +363,27 @@
     }
 
     function downloadReport() {
+        const s1 = JSON.parse(localStorage.getItem('session1Data') || '{}');
         const tasks = JSON.parse(localStorage.getItem('session2Tasks') || '[]');
         const rows = tasks.map(t => `| ${t.task} | ${t.energy} | ${t.time_percent}% |`).join('\n');
         const tableHeader = '| Задача | Энергия | % времени |\n|---|---|---|';
+
         const sections = [
-            '# Карьерная диагностика — Сессия 2\n',
-            '## Твои задачи и функции\n',
+            '# Карьерная диагностика — Полный отчёт\n',
+            '## Цель\n',
+            `${s1.goal || '—'}\n`,
+            '---\n',
+            '## Функционал (Сессия 2)\n',
             tasks.length ? `${tableHeader}\n${rows}` : '—',
             '\n\n---\n',
-            '## Отчёт\n',
+            '## План развития 70/20/10\n',
             report
         ];
         const blob = new Blob([sections.join('\n')], { type: 'text/markdown' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'career-session2.md';
+        a.download = 'career-plan.md';
         a.click();
         URL.revokeObjectURL(url);
     }

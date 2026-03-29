@@ -5,7 +5,7 @@ from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from openai import OpenAI
 from dotenv import load_dotenv
-from prompts import build_prompt, build_prompt_session2
+from prompts import build_prompt, build_prompt_session2, build_prompt_session3
 import os
 import httpx
 
@@ -43,6 +43,16 @@ async def result2(request: Request):
     return templates.TemplateResponse("result2.html", {"request": request})
 
 
+@app.get("/session3", response_class=HTMLResponse)
+async def session3(request: Request):
+    return templates.TemplateResponse("session3.html", {"request": request})
+
+
+@app.get("/result3", response_class=HTMLResponse)
+async def result3(request: Request):
+    return templates.TemplateResponse("result3.html", {"request": request})
+
+
 class TaskItem(BaseModel):
     task: str
     energy: str
@@ -59,6 +69,30 @@ async def analyze2(data: Session2Data):
     prompt = build_prompt_session2(
         [t.model_dump() for t in data.tasks],
         data.session1
+    )
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.7,
+    )
+    report = response.choices[0].message.content
+    return {"report": report}
+
+
+class Session3Data(BaseModel):
+    hours_per_week: str
+    constraints: str = ""
+    session1: dict
+    session2_tasks: list
+
+
+@app.post("/analyze3")
+async def analyze3(data: Session3Data):
+    prompt = build_prompt_session3(
+        data.hours_per_week,
+        data.constraints,
+        data.session1,
+        data.session2_tasks
     )
     response = client.chat.completions.create(
         model="gpt-4o",
