@@ -243,11 +243,22 @@
     }
 
     function downloadReport() {
-        const blob = new Blob([report], { type: 'text/markdown' });
+        const tasks = JSON.parse(localStorage.getItem('session2Tasks') || '[]');
+        const rows = tasks.map(t => `| ${t.task} | ${t.energy} | ${t.time_percent}% |`).join('\n');
+        const tableHeader = '| Задача | Энергия | % времени |\n|---|---|---|';
+        const sections = [
+            '# Карьерная диагностика — Сессия 2\n',
+            '## Твои задачи и функции\n',
+            tasks.length ? `${tableHeader}\n${rows}` : '—',
+            '\n\n---\n',
+            '## Отчёт\n',
+            report
+        ];
+        const blob = new Blob([sections.join('\n')], { type: 'text/markdown' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'career-report-session2.md';
+        a.download = 'career-session2.md';
         a.click();
         URL.revokeObjectURL(url);
     }

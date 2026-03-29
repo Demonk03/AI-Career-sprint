@@ -434,6 +434,7 @@
             });
             const result = await res.json();
             localStorage.setItem('session2Report', result.report);
+            localStorage.setItem('session2Tasks', JSON.stringify(tasks));
             window.location.href = '/result2';
         } catch (err) {
             document.getElementById('loader').classList.remove('active');

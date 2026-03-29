@@ -249,11 +249,31 @@
     }
 
     function downloadReport() {
-        const blob = new Blob([report], { type: 'text/markdown' });
+        const s1 = JSON.parse(localStorage.getItem('session1Data') || '{}');
+        const sections = [
+            '# Карьерная диагностика — Сессия 1\n',
+            '## Твои ответы\n',
+            `**Цель на 6–9 месяцев**\n${s1.goal || '—'}\n`,
+            `**Почему это важно**\n${s1.goal_why || '—'}\n`,
+            `**Что делаю стабильно хорошо**\n${s1.strengths || '—'}\n`,
+            `**Опыт, которым горжусь**\n${s1.experience || '—'}\n`,
+            `**Как воспринимают коллеги**\n${s1.reputation || '—'}\n`,
+            `**Когда максимально продуктивен**\n${s1.productive_when || '—'}\n`,
+            `**Что точно не работает**\n${s1.not_working || '—'}\n`,
+            `**Что выбивает из состояния**\n${s1.drains || '—'}\n`,
+            `**SWOT — Сильные стороны**\n${s1.swot_strong || '—'}\n`,
+            `**SWOT — Слабые стороны**\n${s1.swot_weak || '—'}\n`,
+            `**SWOT — Возможности**\n${s1.swot_opportunities || '—'}\n`,
+            `**SWOT — Угрозы**\n${s1.swot_threats || '—'}\n`,
+            '---\n',
+            '## Отчёт\n',
+            report
+        ];
+        const blob = new Blob([sections.join('\n')], { type: 'text/markdown' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'career-report.md';
+        a.download = 'career-session1.md';
         a.click();
         URL.revokeObjectURL(url);
     }
