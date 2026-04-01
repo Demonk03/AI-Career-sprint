@@ -21,9 +21,14 @@ SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_ANON_KEY")
 
 
-async def log_event(event_type: str, session: int):
+async def log_event(event_type: str, session: int, rating: int = None, comment: str = None):
     if not SUPABASE_URL or not SUPABASE_KEY:
         return
+    payload = {"event_type": event_type, "session": session}
+    if rating is not None:
+        payload["rating"] = rating
+    if comment:
+        payload["comment"] = comment
     async with httpx.AsyncClient() as c:
         await c.post(
             f"{SUPABASE_URL}/rest/v1/events",
@@ -32,7 +37,7 @@ async def log_event(event_type: str, session: int):
                 "Authorization": f"Bearer {SUPABASE_KEY}",
                 "Content-Type": "application/json",
             },
-            json={"event_type": event_type, "session": session},
+            json=payload,
         )
 
 
@@ -142,6 +147,7 @@ async def feedback(data: FeedbackData):
             f"https://api.telegram.org/bot{token}/sendMessage",
             json={"chat_id": chat_id, "text": text}
         )
+    await log_event("feedback", data.session, rating=data.rating, comment=data.comment or None)
     return {"ok": True}
 
 
