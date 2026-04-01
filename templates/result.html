@@ -396,6 +396,7 @@
         a.download = 'career-session1.md';
         a.click();
         URL.revokeObjectURL(url);
+        fetch('/log', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({session: 1}) });
     }
 </script>
 

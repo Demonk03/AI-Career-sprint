@@ -386,6 +386,7 @@
         a.download = 'career-plan.md';
         a.click();
         URL.revokeObjectURL(url);
+        fetch('/log', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({session: 3}) });
     }
 </script>
 

@@ -17,6 +17,24 @@ templates = Jinja2Templates(directory="templates")
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_ANON_KEY")
+
+
+async def log_event(event_type: str, session: int):
+    if not SUPABASE_URL or not SUPABASE_KEY:
+        return
+    async with httpx.AsyncClient() as c:
+        await c.post(
+            f"{SUPABASE_URL}/rest/v1/events",
+            headers={
+                "apikey": SUPABASE_KEY,
+                "Authorization": f"Bearer {SUPABASE_KEY}",
+                "Content-Type": "application/json",
+            },
+            json={"event_type": event_type, "session": session},
+        )
+
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
@@ -76,6 +94,7 @@ async def analyze2(data: Session2Data):
         temperature=0.7,
     )
     report = response.choices[0].message.content
+    await log_event("session_complete", 2)
     return {"report": report}
 
 
@@ -100,6 +119,7 @@ async def analyze3(data: Session3Data):
         temperature=0.7,
     )
     report = response.choices[0].message.content
+    await log_event("session_complete", 3)
     return {"report": report}
 
 
@@ -149,4 +169,15 @@ async def analyze(data: SurveyData):
         temperature=0.7,
     )
     report = response.choices[0].message.content
+    await log_event("session_complete", 1)
     return {"report": report}
+
+
+class LogData(BaseModel):
+    session: int
+
+
+@app.post("/log")
+async def log_download(data: LogData):
+    await log_event("download", data.session)
+    return {"ok": True}
